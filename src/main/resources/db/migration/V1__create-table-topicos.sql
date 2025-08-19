@@ -1,4 +1,3 @@
--- Criação da tabela de usuários
 CREATE TABLE usuarios (
     id BIGINT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -7,7 +6,6 @@ CREATE TABLE usuarios (
     PRIMARY KEY(id)
 );
 
--- Criação da tabela de cursos
 CREATE TABLE cursos (
     id BIGINT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -15,13 +13,12 @@ CREATE TABLE cursos (
     PRIMARY KEY(id)
 );
 
--- Criação da tabela de tópicos com as chaves estrangeiras
 CREATE TABLE topicos (
     id BIGINT NOT NULL AUTO_INCREMENT,
     titulo VARCHAR(100) NOT NULL UNIQUE,
     mensagem TEXT NOT NULL,
     data_criacao DATETIME NOT NULL,
-    status VARCHAR(100) NOT NULL,
+    status BOOLEAN NOT NULL,
     autor_id BIGINT,
     curso_id BIGINT,
     PRIMARY KEY(id),

@@ -1,6 +1,8 @@
 package com.forumhub.forumhub.controller;
 
+import com.forumhub.forumhub.dto.DadosAtualizacaoTopico;
 import com.forumhub.forumhub.dto.DadosCadastroTopico;
+import com.forumhub.forumhub.dto.DadosListagemTopico;
 import com.forumhub.forumhub.model.Curso;
 import com.forumhub.forumhub.model.Topico;
 import com.forumhub.forumhub.model.Usuario;
@@ -11,10 +13,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/topicos")
@@ -30,16 +31,41 @@ public class TopicoController {
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTopico dados) {
-        // Busca o autor e o curso no banco de dados pelos IDs recebidos
         Usuario autor = usuarioRepository.getReferenceById(dados.autorId());
         Curso curso = cursoRepository.getReferenceById(dados.cursoId());
 
-        // Cria a entidade Topico com os dados do DTO e as entidades encontradas
         Topico topico = new Topico(dados, autor, curso);
 
-        // Salva no banco de dados
+
         topicoRepository.save(topico);
 
-        return ResponseEntity.ok().build(); // Retorna um 200 OK simples por enquanto
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<List<DadosListagemTopico>> listar() {
+        List<Topico> topicos = topicoRepository.findAll();
+
+        List<DadosListagemTopico> dadosListagem = topicos.stream()
+                .map(DadosListagemTopico::new)
+                .toList();
+
+        return ResponseEntity.ok(dadosListagem);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity detalhar(@PathVariable Long id) {
+        var topico = topicoRepository.getReferenceById(id);
+
+        return ResponseEntity.ok(new DadosListagemTopico(topico));
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoTopico dados) {
+        var topico = topicoRepository.getReferenceById(dados.id());
+
+        topico.atualizarInformacoes(dados);
+        return ResponseEntity.ok(new DadosListagemTopico(topico));
     }
 }
