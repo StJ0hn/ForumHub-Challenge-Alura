@@ -8,6 +8,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.forumhub.forumhub.dto.DadosCadastroTopico;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
 @Table(name = "topicos")
 @Entity(name = "Topico")
 @Getter
@@ -16,21 +22,24 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 public class Topico {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String titulo;
     private String mensagem;
     private LocalDateTime dataCriacao = LocalDateTime.now();
-    private Boolean status = true;
+    private String status = "NAO_RESPONDIDO";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "autor_id")
     private Usuario autor;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "curso_id")
     private Curso curso;
 
+    public Topico(DadosCadastroTopico dados, Usuario autor, Curso curso) {
+        this.titulo = dados.titulo();
+        this.mensagem = dados.mensagem();
+        this.autor = autor;
+        this.curso = curso;
+    }
 }
